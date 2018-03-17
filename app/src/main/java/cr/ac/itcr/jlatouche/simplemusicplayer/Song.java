@@ -8,6 +8,7 @@ public class Song {
     String name;
     String author;
     String lyrics;
+    int time;
     int coverArt;
 
     public Song() {
@@ -44,5 +45,21 @@ public class Song {
 
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getCoverArt() {
+        return coverArt;
+    }
+
+    public void setCoverArt(int coverArt) {
+        this.coverArt = coverArt;
     }
 }
