@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -38,11 +39,18 @@ public class MusicPlayerActivity extends AppCompatActivity {
         final Button previewButton = findViewById(R.id.previewButton);
         final Button playpauseButton = findViewById(R.id.playpauseButton);
         final Button nextButton = findViewById(R.id.nextButton);
+        final TextView songLyricsText = findViewById(R.id.songLyricsText);
 
         songNameText.setText(currentSong.getName());
 
         int mediaPos = mediaPlayer.getCurrentPosition();
         int mediaMax = mediaPlayer.getDuration();
+
+        String lyrics = getResources().getString(R.string.lyrics);
+        songLyricsText.setText(lyrics);
+
+        final LyricsAnimation animation = new LyricsAnimation(0, lyrics, mediaMax);
+        songLyricsText.animate().translationYBy(animation.getCurrentY(mediaMax)).setDuration(mediaMax);
 
         int minutes = mediaPos / (60 * 1000);
         int seconds = (mediaPos / 1000) % 60;
@@ -65,17 +73,22 @@ public class MusicPlayerActivity extends AppCompatActivity {
                 if (mediaPlayer != null && fromUser) {
                     mediaPlayer.seekTo(progress);
                     int mediaPos_new = mediaPlayer.getCurrentPosition();
+                    int mediaMax = mediaPlayer.getDuration();
 
                     int minutes = mediaPos_new / (60 * 1000);
                     int seconds = (mediaPos_new / 1000) % 60;
                     String mediaPosStr = String.format("%d:%02d", minutes, seconds);
                     actualTimeText.setText(mediaPosStr);
+
+                    songLyricsText.setY(animation.getCurrentY(mediaPos_new));
+                    Log.d("NUMBER", "onProgressChanged: " + String.valueOf(animation.getCurrentY(mediaPos_new)));
+                    songLyricsText.animate().translationYBy(animation.getCurrentY(mediaMax)).setDuration(mediaMax - mediaPos_new);
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.setVolume(0, 0);
+
             }
 
             @Override
@@ -144,5 +157,23 @@ public class MusicPlayerActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private class LyricsAnimation {
+        private float startY;
+        private float endY;
+        private int maxDuration;
+
+        public LyricsAnimation(float startY, String lyrics, int maxDuration) {
+            this.startY = startY;
+            this.maxDuration = maxDuration;
+            String[] lines = lyrics.split("\r\n|\r|\n");
+            int newLinesCount = lines.length;
+            this.endY = -newLinesCount * 30;
+        }
+
+        public float getCurrentY(int currentTime) {
+            return (currentTime / maxDuration) * (endY - startY) + startY;
+        }
     }
 }
