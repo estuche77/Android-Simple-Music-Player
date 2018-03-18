@@ -1,5 +1,7 @@
 package cr.ac.itcr.jlatouche.simplemusicplayer;
 
+import java.io.Serializable;
+
 /**
  * Created by estuche on 17/03/18.
  */
@@ -17,10 +19,11 @@ public class Song {
         this.lyrics = "";
     }
 
-    public Song(String name, String author, String lyrics) {
+    public Song(String name, String author, String lyrics, int time) {
         this.name = name;
         this.author = author;
         this.lyrics = lyrics;
+        this.time = time;
     }
 
     public String getName() {
